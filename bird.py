@@ -35,17 +35,23 @@ class Bird:
             self.hitbox = (self.x, self.y, self.width, self.height)
             pygame.draw.rect(surface, 'red', self.hitbox, 1)
         
-        # Bird's gravity when flying == True
-        if self.flying:
-            if self.hitbox[1] + self.hitbox[3] < 512:
-                self.gravity += 0.25
-                self.y += int(self.gravity)
+        # Bird's gravity when flying == True     
+        if self.flying and self.hitbox[1] + self.hitbox[3] < 512:
+            self.gravity += 0.25
+            self.y += int(self.gravity)
 
-            else: 
-                self.alive = False
-                die_img = pygame.transform.rotate(self.img[1], -90)
-                surface.blit(die_img, (self.x, self.y))
-                self.flying = False
+        # If bird hit the ground, bird dies and stops flying
+        elif self.hitbox[1] + self.hitbox[3] >= 512: 
+            self.alive = False
+            self.flying = False
+            die_img = pygame.transform.rotate(self.img[1], -90)
+            surface.blit(die_img, (self.x, self.y))
                 
+    def collide(self, surface):
+        if self.y + self.height < 512:
+            self.gravity += 0.25
+            self.y += int(self.gravity)
         
+        die_img = pygame.transform.rotate(self.img[1], -90)
+        surface.blit(die_img, (self.x, self.y))
         
