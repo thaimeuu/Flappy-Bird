@@ -1,4 +1,5 @@
 import pygame
+from random import randint
 
 pygame.init()
 
@@ -49,7 +50,7 @@ class Bird:
 
     def draw_motion(self, surface):
         self.hitbox = (self.x, self.y, self.width, self.height + 7)
-        # pygame.draw.rect(surface, "red", self.hitbox, 1)
+        pygame.draw.rect(surface, "red", self.hitbox, 1)
 
         if not self.gameover:
             if self.flyCount + 1 >= 30:
@@ -73,7 +74,7 @@ class Bird:
 
     def hit(self):
         # Reset bird
-        self.x = HORIZONTAL // 2 - 34 // 2 - 20
+        self.x = HORIZONTAL // 2 - 34 // 2 - 60
         self.y = VERTICAL // 2 - 24 // 2
         self.flyCount = 0
         self.waiting = True
@@ -90,52 +91,43 @@ class Bird:
                 if event.type == pygame.QUIT:
                     i = 201
                     pygame.quit()
-                    
+
         self.gameover = False
-        
+
 
 class Pipe:
     img = pygame.image.load("sprites/pipe-green.png")  # 52 x 320
-    
+
     def __init__(self, x, y, width, height, direction):
         self.x = x
         self.y = y
         self.width = width
         self.height = height
         self.direction = direction  # -1 down 1 up
-        
+        self.hitbox = (self.x, self.y, self.width, self.height)
+
     def draw_motion(self, surface):
+        # bot pipe
         if self.direction == 1:
             surface.blit(self.img, (self.x, self.y))
-            # self.x -= BASE_SPEED
+            self.x -= BASE_SPEED
+            self.hitbox = (self.x + 4, self.y, self.width, self.height + 10)
+            pygame.draw.rect(surface, "red", self.hitbox, 1)
+            
+        # top pipe
         else:
             surface.blit(pygame.transform.flip(self.img, False, True), (self.x, self.y))
-            # self.x -= BASE_SPEED
-            
+            self.x -= BASE_SPEED
+            self.hitbox = (self.x + 4, self.y, self.width, self.height)
+            pygame.draw.rect(surface, "red", self.hitbox, 1)
+
     def hit(self):
         pass
 
 
-def drawing():
-    global BASE_POSITION
-    screen.blit(BACKGROUND, (0, 0))
-    if not bird.waiting:
-        for pipe in pipes:
-            pipe.draw_motion(screen)
-            pipe.x -= BASE_SPEED
-    screen.blit(BASE, (BASE_POSITION, 512))
-    BASE_POSITION -= BASE_SPEED
-    if BASE_POSITION < -48:
-        BASE_POSITION = 0
-    bird.draw_motion(screen)
-    pygame.display.update()
+bird = Bird(HORIZONTAL // 2 - 34 // 2 - 60, VERTICAL // 2 - 24 // 2, 34, 24)
 
-
-bird = Bird(HORIZONTAL // 2 - 34 // 2 - 20, VERTICAL // 2 - 24 // 2, 34, 24)
-# pipe2 = Pipe(200, -120, 52, 320, -1)
-# pipe1 = Pipe(200, -120 + 320 + PIPE_GAP, 52, 320, 1)
-
-pipes = []
+pipes = [Pipe(336, -120, 52, 320, -1), Pipe(336, -120 + 320 + PIPE_GAP, 52, 320, 1)]
 
 
 running = True
@@ -147,15 +139,9 @@ while running:
         if event.type == pygame.QUIT:
             running = False
 
-    if len(pipes) == 0:
-        pipes.append(Pipe(336, -120 + 320 + PIPE_GAP, 52, 320, 1))
-        pipes.append(Pipe(336, -120, 52, 320, -1))
-        bird.passPipe = False
-        
     for pipe in pipes:
-        if pipe.x + pipe.width <= 0:
+        if pipe.x + pipe.width < 0:
             pipes.pop(pipes.index(pipe))
-    
 
     if not bird.gameover:
         # Bird swinging up and down waiting for player to left-click
@@ -179,18 +165,40 @@ while running:
             bird.flap = False
 
         # Point
-        if pipes:
-            if not bird.passPipe:
-                if bird.x + bird.width > pipes[0].x + pipes[0].width:
-                    point_sound.play()
-                    bird.passPipe = True
-                    
+        if pipes[0].x + pipes[0].width + 5 > bird.x + bird.width > pipes[0].x + pipes[0].width and bird.passPipe == False:
+            bird.passPipe = True
+            point_sound.play()
+        elif bird.passPipe == True:
+            temp = randint(-150, -50)
+            while len(pipes) < 3:
+                pipes.append(Pipe(288, temp, 52, 320, -1))  # top pipe
+                pipes.append(Pipe(288, temp + 320 + PIPE_GAP, 52, 320, 1))  # bot pipe
+            bird.passPipe = False
+
         # Losing/Collision
-        if bird.hitbox[1] + bird.hitbox[3] >= 512:
+        # or (bird.hitbox[1] <= pipes[0].y and pipes[0].x + pipes[0].width >= bird.hitbox[0] >= pipes[0].x)
+        if (bird.hitbox[1] + bird.hitbox[3] >= 512
+            or ((bird.hitbox[1] <= pipes[0].hitbox[1] + pipes[0].hitbox[3]) and (pipes[0].hitbox[0] + pipes[0].hitbox[2]) >= (bird.hitbox[0] + bird.hitbox[2]) >= pipes[0].hitbox[0])
+            ):
             hit_sound.play()
             bird.gameover = True
             bird.hit()
+            
+            del pipes
+            pipes = [Pipe(336, -120, 52, 320, -1), Pipe(336, -120 + 320 + PIPE_GAP, 52, 320, 1)]
 
-    drawing()
+    # drawing()
+    screen.blit(BACKGROUND, (0, 0))
+    if not bird.waiting:
+        for pipe in pipes:
+            pipe.draw_motion(screen)
+            
+    screen.blit(BASE, (BASE_POSITION, 512))
+    BASE_POSITION -= BASE_SPEED
+    if BASE_POSITION < -48:
+        BASE_POSITION = 0
+    bird.draw_motion(screen)
+
+    pygame.display.update()
 
 pygame.quit()
