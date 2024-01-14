@@ -1,5 +1,4 @@
 import pygame
-from sound import hit
 
 
 class Bird:
@@ -42,11 +41,11 @@ class Bird:
             self.y += int(self.gravity)
 
         # If bird hit the ground, bird dies and stops flying
-        elif self.hitbox[1] + self.hitbox[3] >= 512: 
-            self.alive = False
-            self.flying = False
-            die_img = pygame.transform.rotate(self.img[1], -90)
-            surface.blit(die_img, (self.x, self.y))
+        # elif self.hitbox[1] + self.hitbox[3] >= 512: 
+        #     self.alive = False
+        #     self.flying = False
+        #     die_img = pygame.transform.rotate(self.img[1], -90)
+        #     surface.blit(die_img, (self.x, self.y))
                 
     def collide(self, surface):
         if self.y + self.height < 512:

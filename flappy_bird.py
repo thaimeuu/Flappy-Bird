@@ -85,7 +85,8 @@ while running:
         elif event.type == pygame.MOUSEBUTTONDOWN and bird.flying == False and bird.alive == True:
             bird.flying = True
         # Check if restart is pressed
-        elif event.type == pygame.MOUSEBUTTONDOWN and RESTART_rect.collidepoint(event.pos) and bird.flying == False and bird.alive == False:
+        elif event.type == pygame.MOUSEBUTTONDOWN and RESTART_rect.collidepoint(event.pos) and not bird.flying and not bird.alive:
+            swoosh.play()
             restart()
      
     # Generating pipes after pipes when bird's flying and alive
@@ -99,12 +100,22 @@ while running:
      
     # Allow bird to flap when it's alive (game not over)
     if bird.alive:     
-        if pygame.mouse.get_pressed()[0] and click == False:
+        # bird.gravity helps avoid wing sound when clicking restart
+        if pygame.mouse.get_pressed()[0] and bird.gravity and click == False:
             wing.play()
             click = True
             bird.gravity = -5
         elif not pygame.mouse.get_pressed()[0]:
             click = False
+            
+        # Bird collides when hits pipes using hit base
+        if bird.hitbox[1] + bird.hitbox[3] >= 512 and bird.flying and bird.alive: 
+            hit.play()
+            die.play()
+
+            bird.gravity = 0
+            bird.alive = False
+            bird.flying = False
             
         # Bird collides when hits pipes using hit boxes
         if (bot_pipe.hitbox[0] <= bird.hitbox[0] + bird.hitbox[2] <= bot_pipe.hitbox[0] + bot_pipe.hitbox[2] or
@@ -114,6 +125,8 @@ while running:
                 bird.hitbox[1] + bird.hitbox[3] >= bot_pipe.hitbox[1]):
                 
                 hit.play()
+                die.play()
+
                 bird.gravity = 0
                 bird.alive = False
                 bird.flying = False 
