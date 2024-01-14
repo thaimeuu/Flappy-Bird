@@ -52,25 +52,36 @@ class Bird:
         self.hitbox = (self.x, self.y, self.width, self.height + 7)
         pygame.draw.rect(surface, "red", self.hitbox, 1)
 
-        if not self.gameover:
-            if self.flyCount + 1 >= 30:
-                self.flyCount = 0
+        # if not self.gameover:
+        if self.flyCount + 1 >= 30:
+            self.flyCount = 0
 
-            surface.blit(
-                pygame.transform.rotate(
-                    self.img[self.flyCount // 10], self.gravity * -2.5
-                ),
-                (self.x, self.y),
-            )
-            self.flyCount += 1
+        surface.blit(pygame.transform.rotate(self.img[self.flyCount // 10], self.gravity * -2.5), (self.x, self.y))
+        self.flyCount += 1
 
-            if not self.waiting:
-                if self.hitbox[1] + self.hitbox[3] <= 512:
-                    self.y += int(self.gravity)
-                    if self.gravity < 11:
-                        self.gravity += 0.25
-                    else:
-                        self.gravity = 11
+        if not self.waiting:
+            if self.hitbox[1] + self.hitbox[3] <= 512:
+                self.y += int(self.gravity)
+                if self.gravity < 11:
+                    self.gravity += 0.25
+                else:
+                    self.gravity = 11
+                        
+        if self.gameover:
+            self.y += 10
+            
+        # elif self.gameover:
+        #     # Bird drop to ground
+        #     image = pygame.transform.rotate(self.img[1], -90)
+        #     surface.blit(image, (self.x, self.y))
+            
+        #     if self.hitbox[1] + self.hitbox[3] <= 512:
+        #             self.y += int(self.gravity)
+        #             if self.gravity < 11:
+        #                 self.gravity += 0.25
+        #             else:
+        #                 self.gravity = 11
+            
 
     def hit(self):
         # Reset bird
@@ -127,7 +138,7 @@ class Pipe:
 
 bird = Bird(HORIZONTAL // 2 - 34 // 2 - 60, VERTICAL // 2 - 24 // 2, 34, 24)
 
-pipes = [Pipe(336, -120, 52, 320, -1), Pipe(336, -120 + 320 + PIPE_GAP, 52, 320, 1)]
+pipes = [Pipe(425, -120, 52, 320, -1), Pipe(425, -120 + 320 + PIPE_GAP, 52, 320, 1)]
 
 
 running = True
@@ -178,15 +189,25 @@ while running:
         # Losing/Collision
         # or (bird.hitbox[1] <= pipes[0].y and pipes[0].x + pipes[0].width >= bird.hitbox[0] >= pipes[0].x)
         if (bird.hitbox[1] + bird.hitbox[3] >= 512
+            
             or ((bird.hitbox[1] <= pipes[0].hitbox[1] + pipes[0].hitbox[3]) and (pipes[0].hitbox[0] + pipes[0].hitbox[2]) >= (bird.hitbox[0] + bird.hitbox[2]) >= pipes[0].hitbox[0])
+            or ((bird.hitbox[1] <= pipes[0].hitbox[1] + pipes[0].hitbox[3]) and (pipes[0].hitbox[0] + pipes[0].hitbox[2]) >= bird.hitbox[0] >= pipes[0].hitbox[0])
+            
+            or ((bird.hitbox[1] + bird.hitbox[3] >= pipes[1].hitbox[1]) and (pipes[1].hitbox[0] + pipes[1].hitbox[2]) >= (bird.hitbox[0] + bird.hitbox[2]) >= pipes[1].hitbox[0])
+            or ((bird.hitbox[1] + bird.hitbox[3] >= pipes[1].hitbox[1]) and (pipes[1].hitbox[0] + pipes[1].hitbox[2]) >= bird.hitbox[0] >= pipes[1].hitbox[0])
             ):
             hit_sound.play()
+            
+            
+            
             bird.gameover = True
             bird.hit()
             
             del pipes
-            pipes = [Pipe(336, -120, 52, 320, -1), Pipe(336, -120 + 320 + PIPE_GAP, 52, 320, 1)]
+            pipes = [Pipe(425, -120, 52, 320, -1), Pipe(425, -120 + 320 + PIPE_GAP, 52, 320, 1)]
 
+
+        
     # drawing()
     screen.blit(BACKGROUND, (0, 0))
     if not bird.waiting:
