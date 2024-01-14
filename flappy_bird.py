@@ -24,7 +24,7 @@ FPS = 60
 
 
 # Sprites
-COUNTER = [
+COUNTER = [  # 24 x 36
     pygame.image.load("sprites/0.png"),
     pygame.image.load("sprites/1.png"),
     pygame.image.load("sprites/2.png"),
@@ -40,12 +40,14 @@ MESSAGE = pygame.image.load("sprites/message.png")
 GAMEOVER = pygame.image.load("sprites/gameover.png")
 BACKGROUND = pygame.image.load("sprites/background-day.png")
 BASE = pygame.image.load("sprites/base.png")
-
 BASE_POS = 0
 SCROLL_SPEED = 4
+bird = Bird(HORIZONTAL//2 - 80, VERTICAL//2 - 12, 34, 24)
 
 # Main loop
 running = True
+click = False  # user's click
+
 while running:
     clock.tick(FPS)
     
@@ -53,15 +55,25 @@ while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        if event.type == pygame.MOUSEBUTTONDOWN and bird.flying == False and bird.alive == True:
+            bird.flying = True
            
+    if pygame.mouse.get_pressed()[0] and click == False:
+        click = True
+        bird.gravity = -5
+    elif not pygame.mouse.get_pressed()[0]:
+        click = False
+    
     # DISPLAY 
     screen.blit(BACKGROUND, (0, 0))
-    screen.blit(BASE, (BASE_POS, 512))
-    
-    # Scroll base
-    BASE_POS -= SCROLL_SPEED
-    if BASE_POS < -48:
-        BASE_POS = 0
+    screen.blit(COUNTER[0], (HORIZONTAL//2-COUNTER[0].get_size()[0]//2, 15))
+    screen.blit(BASE, (BASE_POS, 512))  
+    if bird.alive:
+        BASE_POS -= SCROLL_SPEED  # Scroll base when bird is alive
+        if BASE_POS < -48:
+            BASE_POS = 0
+        
+    bird.update(screen)
     
     pygame.display.update()
     
