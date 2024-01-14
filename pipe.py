@@ -22,11 +22,11 @@ class Pipe:
         if self.direction == -1:
             surface.blit(self.bot_pipe, (self.x, self.y))
             self.hitbox = (self.x, self.y, self.width, self.height)
-            pygame.draw.rect(surface, 'red', self.hitbox, 1)
+            # pygame.draw.rect(surface, 'red', self.hitbox, 1)
         else:
             surface.blit(self.top_pipe, (self.x, self.y - self.height - self.pipe_gap))
             self.hitbox = (self.x, self.y - self.height - self.pipe_gap, self.width, self.height)
-            pygame.draw.rect(surface, 'red', self.hitbox, 1)
+            # pygame.draw.rect(surface, 'red', self.hitbox, 1)
             
         # Scroll pipe with SCROLL_SPEED
         self.x -= 4
@@ -35,10 +35,10 @@ class Pipe:
         if self.direction == -1:
             surface.blit(self.bot_pipe, (self.x, self.y))
             self.hitbox = (self.x, self.y, self.width, self.height)
-            pygame.draw.rect(surface, 'red', self.hitbox, 1)
+            # pygame.draw.rect(surface, 'red', self.hitbox, 1)
         else:
             surface.blit(self.top_pipe, (self.x, self.y - self.height - self.pipe_gap))
             self.hitbox = (self.x, self.y - self.height - self.pipe_gap, self.width, self.height)
-            pygame.draw.rect(surface, 'red', self.hitbox, 1)
+            # pygame.draw.rect(surface, 'red', self.hitbox, 1)
         
         

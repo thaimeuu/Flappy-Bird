@@ -1,4 +1,5 @@
 import pygame
+from sound import hit
 
 
 class Bird:
@@ -33,7 +34,7 @@ class Bird:
         
             # Update hitbox for visualization
             self.hitbox = (self.x, self.y, self.width, self.height)
-            pygame.draw.rect(surface, 'red', self.hitbox, 1)
+            # pygame.draw.rect(surface, 'red', self.hitbox, 1)
         
         # Bird's gravity when flying == True     
         if self.flying and self.hitbox[1] + self.hitbox[3] < 512:
