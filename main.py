@@ -108,7 +108,7 @@ while running:
         elif not pygame.mouse.get_pressed()[0]:
             click = False
             
-        # Bird collides when hits pipes using hit base
+        # Bird collides when hits base using hit boxes
         if bird.hitbox[1] + bird.hitbox[3] >= 512 and bird.flying and bird.alive: 
             hit.play()
             die.play()
