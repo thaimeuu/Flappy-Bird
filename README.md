@@ -13,3 +13,4 @@
 - [x] Pipe arrangement (Randomly generated in a predefined range)
 - [ ] Pipes moving with the same speed as Base
 - [ ] Pipes' speed variation
+- [ ] High Score
