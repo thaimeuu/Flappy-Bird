@@ -142,6 +142,8 @@ while running:
             if one > 9:
                 ten += 1
                 one = 0
+            if ten > 9:
+                ten = 0
     
     # DISPLAY 
     screen.blit(BACKGROUND, (0, 0))
