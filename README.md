@@ -1,8 +1,12 @@
-## Flappy Bird using pygame
+## `Flappy Bird using pygame`
 
 ![Flappy Bird](icon.ico)
 
-## Features Checklist
+## `Screenshot`
+
+![Alt text](screenshot.png)
+
+## `Features Checklist`
 
 - [x] Visual feedback (Message, Bird's motion, Base moving, Gameover, Restart)
 - [x] Responsive control (Click to flap)
